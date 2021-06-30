@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import urllib.parse 
 import json
+from flask_cors import CORS
 
 from werkzeug.wrappers import response
 
@@ -12,6 +13,7 @@ params = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=projetinho.database
 
 # start do banco
 app = Flask (__name__)
+cors = CORS(app)
 app.config['SECRET_KEY'] = 'supersecret'
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
@@ -32,7 +34,7 @@ def selecionar_produtos():
     produtos_classe = Produtos.query.all()
     produtos_json = [produtos.to_json() for produtos in produtos_classe] 
 
-    return gera_response(200, "usuarios", produtos_json, "OK")
+    return gera_response(200, "produto", produtos_json, "OK")
 
 # selecionar um
 @app.route("/produtos/<id>", methods=["GET"])
@@ -40,10 +42,10 @@ def selecionar_produto(id):
     produto_classe = Produtos.query.filter_by(id=id).first()
     produto_json = produto_classe.to_json()
 
-    return gera_response(200, "usuario", produto_json, "OK")
+    return gera_response(200, "produto", produto_json, "OK")
 
 # criar
-@app.route("/produtos", methods=["POST"])
+@app.route("/produto", methods=["POST"])
 def criar_produto():
     body = request.get_json()
 
@@ -78,7 +80,7 @@ def atualizar_produto(id):
         return gera_response(400, "produto", {}, "Erro ao atualizar") 
 
 # delet
-@app.route("/produtos/<id>", methods= ["DELETE"])
+@app.route("/produto/<id>", methods= ["DELETE"])
 def deletar_produto(id):
     produto_classe = Produtos.query.filter_by(id=id).first()
 
@@ -98,6 +100,6 @@ def gera_response (status, nome_do_conteudo, conteudo, mensagem=False):
     if(mensagem):
         body["mensagem"] = mensagem
 
-    return Response (json.dumps(body), status=status, mimetype="application/json")   
+    return Response (json.dumps(body), status=status, mimetype="application/json") 
     
 app.run()
