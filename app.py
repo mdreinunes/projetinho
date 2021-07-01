@@ -1,7 +1,6 @@
 from operator import methodcaller
 from flask import Flask, Response, Request, request
 from flask_sqlalchemy import SQLAlchemy
-import os
 import urllib.parse 
 import json
 from flask_cors import CORS
@@ -102,4 +101,3 @@ def gera_response (status, nome_do_conteudo, conteudo, mensagem=False):
 
     return Response (json.dumps(body), status=status, mimetype="application/json") 
     
-app.run()
